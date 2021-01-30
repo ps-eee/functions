@@ -3,7 +3,7 @@ import { TreatmentParam } from '../interfaces/treatment-param';
 const treatmentParams: TreatmentParam[] = [
   {
     "item": "buyCtaColor",
-    "variants": [
+    "choices": [
       {
         "item": "primary",
         "weight": 1
@@ -20,7 +20,7 @@ const treatmentParams: TreatmentParam[] = [
   },
   {
     "item": "buyCtaText",
-    "variants": [
+    "choices": [
       {
         "item": "BUY NOW",
         "weight": 1
@@ -37,7 +37,7 @@ const treatmentParams: TreatmentParam[] = [
   },
   {
     "item": "isReviewsPrioritized",
-    "variants": [
+    "choices": [
       {
         "item": true,
         "weight": 1
@@ -50,7 +50,7 @@ const treatmentParams: TreatmentParam[] = [
   },
   {
     "item": "productHeroImage",
-    "variants": [
+    "choices": [
       {
         "item": "left",
         "weight": 1
@@ -67,7 +67,7 @@ const treatmentParams: TreatmentParam[] = [
   },
   {
     "item": "productThumbnailImage",
-    "variants": [
+    "choices": [
       {
         "item": "left",
         "weight": 1

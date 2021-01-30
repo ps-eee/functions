@@ -1,8 +1,8 @@
 import * as PlanOut from 'planout';
+import { Choice } from '../interfaces/choice';
 import { ExperimentInput } from '../interfaces/experiment-input';
 import { Treatment } from '../interfaces/treatment';
 import { TreatmentParam } from '../interfaces/treatment-param';
-import { Variant } from '../interfaces/variant';
 
 export class Experiment extends PlanOut.Experiment<ExperimentInput, Treatment> {
 
@@ -25,8 +25,8 @@ export class Experiment extends PlanOut.Experiment<ExperimentInput, Treatment> {
         planoutParams.set(
           treatmentParam.item,
           new PlanOut.Ops.Random.WeightedChoice({
-            choices: treatmentParam.variants.map((variant: Variant) => variant.item),
-            weights: treatmentParam.variants.map((variant: Variant) => variant.weight),
+            choices: treatmentParam.choices.map((choice: Choice) => choice.item),
+            weights: treatmentParam.choices.map((choice: Choice) => choice.weight),
             unit: experimentInput.userId
           })
         );
