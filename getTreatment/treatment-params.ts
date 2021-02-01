@@ -1,6 +1,6 @@
 import { TreatmentParam } from '../interfaces/treatment-param';
 
-const treatmentParams: TreatmentParam[] = [
+export const TREATMENT_PARAMS: TreatmentParam[] = [
   {
     "item": "buyCtaColor",
     "choices": [
@@ -83,5 +83,3 @@ const treatmentParams: TreatmentParam[] = [
     ]
   }
 ];
-
-export default treatmentParams;
