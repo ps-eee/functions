@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (context: Context, request: Ht
   const defaultTreatmentHash: string = ObjectHash(defaultTreatment);
 
   const defaultTreatmentStatistic: TreatmentStatistic = {
-    runCount: 0,
+    exposureCount: 0,
     successCount: 0,
     treatment: defaultTreatment,
     treatmentHash: defaultTreatmentHash
@@ -62,7 +62,7 @@ const httpTrigger: AzureFunction = async function (context: Context, request: Ht
       if (!isTreatmentHashPresent) {
 
         const generatedTreatmentStatistic: TreatmentStatistic = {
-          runCount: 1,
+          exposureCount: 1,
           successCount: 0,
           treatment: generatedTreatment,
           treatmentHash: generatedTreatmentHash
@@ -78,8 +78,8 @@ const httpTrigger: AzureFunction = async function (context: Context, request: Ht
       } else {
 
         const arms = treatmentStatistics.length;
-        const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['runCount'] => treatmentStatistic.runCount);
-        const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.runCount);
+        const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['exposureCount'] => treatmentStatistic.exposureCount);
+        const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount);
 
         const ucb = new UCB({ arms, counts, values });
 
@@ -87,7 +87,7 @@ const httpTrigger: AzureFunction = async function (context: Context, request: Ht
 
         const selectedTreatmentStatistic = treatmentStatistics[selectedTreatmentStatisticIndex];
 
-        // TODO: DB - update runCount
+        // TODO: DB - update exposureCount
 
         context.res = {
           status: 200,

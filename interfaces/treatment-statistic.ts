@@ -1,7 +1,7 @@
 import { Treatment } from './treatment';
 
 export interface TreatmentStatistic {
-  runCount: number;
+  exposureCount: number;
   successCount: number;
   treatment: Treatment;
   treatmentHash: string;
