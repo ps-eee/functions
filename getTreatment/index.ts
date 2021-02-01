@@ -26,73 +26,86 @@ const httpTrigger: AzureFunction = async function (context: Context, request: Ht
     treatmentHash: defaultTreatmentHash
   };
 
-  const userId: number = request.query.userId ? Number(request.query.userId) : 0;
+  try {
 
-  if (userId === 0) {
+    const userId: number = request.query.userId ? Number(request.query.userId) : 0;
+
+    if (userId === 0) {
+
+      context.res = {
+        status: 200,
+        body: defaultTreatmentStatistic
+      };
+
+    } else {
+
+      const experimentInput: ExperimentInput = { userId };
+
+      const experiment: Experiment = new Experiment(experimentInput, TREATMENT_PARAMS);
+
+      const generatedTreatment: Treatment = {
+        buyCtaColor: experiment.get('buyCtaColor', defaultTreatment.buyCtaColor),
+        buyCtaText: experiment.get('buyCtaText', defaultTreatment.buyCtaText),
+        isReviewsPrioritized: experiment.get('isReviewsPrioritized', defaultTreatment.isReviewsPrioritized),
+        productHeroImage: experiment.get('productHeroImage', defaultTreatment.productHeroImage),
+        productThumbnailImage: experiment.get('productThumbnailImage', defaultTreatment.productThumbnailImage),
+      };
+
+      const generatedTreatmentHash: string = ObjectHash(generatedTreatment);
+
+      // TODO: DB - get all treatmentStatistics
+
+      const treatmentStatistics: TreatmentStatistic[] = [];
+
+      const isTreatmentHashPresent: boolean = treatmentStatistics.filter((treatmentStatistic: TreatmentStatistic): boolean => treatmentStatistic.treatmentHash === generatedTreatmentHash).length === 1;
+
+      if (!isTreatmentHashPresent) {
+
+        const generatedTreatmentStatistic: TreatmentStatistic = {
+          runCount: 1,
+          successCount: 0,
+          treatment: generatedTreatment,
+          treatmentHash: generatedTreatmentHash
+        };
+
+        // TODO: DB - save new treatmentStatistic
+
+        context.res = {
+          status: 200,
+          body: generatedTreatmentStatistic
+        };
+
+      } else {
+
+        const arms = treatmentStatistics.length;
+        const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['runCount'] => treatmentStatistic.runCount);
+        const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.runCount);
+
+        const ucb = new UCB({ arms, counts, values });
+
+        const selectedTreatmentStatisticIndex = await ucb.select();
+
+        const selectedTreatmentStatistic = treatmentStatistics[selectedTreatmentStatisticIndex];
+
+        // TODO: DB - update runCount
+
+        context.res = {
+          status: 200,
+          body: selectedTreatmentStatistic
+        };
+
+      }
+
+    }
+
+  } catch (error) {
+
+    context.log(error);
 
     context.res = {
       status: 200,
       body: defaultTreatmentStatistic
     };
-
-  } else {
-
-    const experimentInput: ExperimentInput = { userId };
-
-    const experiment: Experiment = new Experiment(experimentInput, TREATMENT_PARAMS);
-
-    const generatedTreatment: Treatment = {
-      buyCtaColor: experiment.get('buyCtaColor', defaultTreatment.buyCtaColor),
-      buyCtaText: experiment.get('buyCtaText', defaultTreatment.buyCtaText),
-      isReviewsPrioritized: experiment.get('isReviewsPrioritized', defaultTreatment.isReviewsPrioritized),
-      productHeroImage: experiment.get('productHeroImage', defaultTreatment.productHeroImage),
-      productThumbnailImage: experiment.get('productThumbnailImage', defaultTreatment.productThumbnailImage),
-    };
-
-    const generatedTreatmentHash: string = ObjectHash(generatedTreatment);
-
-    // TODO: DB - get all treatmentStatistics
-
-    const treatmentStatistics: TreatmentStatistic[] = [];
-
-    const isTreatmentHashPresent: boolean = treatmentStatistics.filter((treatmentStatistic: TreatmentStatistic): boolean => treatmentStatistic.treatmentHash === generatedTreatmentHash).length === 1;
-
-    if (!isTreatmentHashPresent) {
-
-      const generatedTreatmentStatistic: TreatmentStatistic = {
-        runCount: 1,
-        successCount: 0,
-        treatment: generatedTreatment,
-        treatmentHash: generatedTreatmentHash
-      };
-
-      // TODO: DB - save new treatmentStatistic
-
-      context.res = {
-        status: 200,
-        body: generatedTreatmentStatistic
-      };
-
-    } else {
-
-      const arms = treatmentStatistics.length;
-      const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['runCount'] => treatmentStatistic.runCount);
-      const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.runCount);
-
-      const ucb = new UCB({ arms, counts, values });
-
-      const selectedTreatmentStatisticIndex = await ucb.select();
-
-      const selectedTreatmentStatistic = treatmentStatistics[selectedTreatmentStatisticIndex];
-
-      // TODO: DB - update runCount
-
-      context.res = {
-        status: 200,
-        body: selectedTreatmentStatistic
-      };
-
-    }
 
   }
 
