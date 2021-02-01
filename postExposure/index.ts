@@ -1,16 +1,31 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import { Exposure } from '../interfaces/exposure';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log('HTTP trigger function processed a request.');
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
 
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: responseMessage
-    };
+  if (req.method === 'POST') {
+
+    if (req.body && req.body.timestamp && req.body.treatmentHash && req.body.userId) {
+
+      try {
+
+        const exposure: Exposure = req.body;
+
+        // TODO: DB - update exposureCount
+
+        context.res = { status: 201, body: null };
+
+      } catch (error) {
+
+        context.log(error);
+
+        context.res = { status: 500, body: null };
+
+      }
+
+    } else { context.res = { status: 400, body: null }; }
+
+  } else { context.res = { status: 404, body: null }; }
 
 };
 
