@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/getTreatment/index.js"
+  "scriptFile": "../dist/getTreatmentStatistic/index.js"
 }
