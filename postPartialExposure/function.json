@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/postExposure/index.js"
+  "scriptFile": "../dist/postPartialExposure/index.js"
 }

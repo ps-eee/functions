@@ -9,13 +9,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
       try {
 
-        const exposure: Exposure = {
-          id: null,
+        const partialExposure: Omit<Exposure, 'id'> = {
           isSuccessful: false,
           ...req.body
         };
 
         // TODO: DB - save exposure and update treatmentStatictic.exposureCount transaction and return ID
+
+        const exposure: Exposure = { id: null, ...partialExposure };
 
         context.res = { status: 201, body: exposure };
 
