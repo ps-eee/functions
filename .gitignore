@@ -92,3 +92,5 @@ bin
 obj
 appsettings.json
 .DS_Store
+
+keys.ts
