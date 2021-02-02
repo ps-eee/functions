@@ -11,7 +11,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
   if (req.method === 'GET') {
 
-    if (req.query.userId && Number.isInteger(Number(req.query.userId))) {
+    if (req.query.userId && Number.isInteger(Number(req.query.userId)) && Number(req.query.userId) >= 0) {
 
       try {
 

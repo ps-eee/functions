@@ -5,7 +5,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
   if (req.method === 'PUT') {
 
-    if (req.body && req.body.id && Number.isInteger(Number(req.body.id))) {
+    if (req.body && req.body.id && Number.isInteger(Number(req.body.id)) && Number(req.body.id) >= 0) {
 
       try {
 

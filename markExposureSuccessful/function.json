@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/putExposure/index.js"
+  "scriptFile": "../dist/markExposureSuccessful/index.js"
 }

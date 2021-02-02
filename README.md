@@ -6,14 +6,14 @@
 
 **URL**: GET https://ps-eee-functions.azurewebsites.net/api/getTreatmentStatistic
 
-## postPartialExposure
+## postExposure
 
 **Purpose**: Create exposure of a treatment
 
-**URL**: POST https://ps-eee-functions.azurewebsites.net/api/postPartialExposure
+**URL**: POST https://ps-eee-functions.azurewebsites.net/api/postExposure
 
-## putExposure
+## markExposureSuccessful
 
 **Purpose**: Update exposure of a treatment
 
-**URL**: POST https://ps-eee-functions.azurewebsites.net/api/putExposure
+**URL**: POST https://ps-eee-functions.azurewebsites.net/api/markExposureSuccessful
