@@ -45,7 +45,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             faunadbQuery.Paginate(
               faunadbQuery.Match(
                 faunadbQuery.Index(INDEXES.ALL_TREATMENT_STATISTICS)
-              )
+              ),
+              { size: 162 }
             ),
             faunadbQuery.Lambda("X", faunadbQuery.Get(faunadbQuery.Var("X")))
           )

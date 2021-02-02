@@ -1,20 +1,28 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { Exposure } from '../interfaces/exposure';
+import { COLLECTIONS } from '../constants/collections';
 import { faunadbClient, faunadbQuery } from '../constants/faunadb';
+import { Exposure } from '../interfaces/exposure';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
   if (req.method === 'PUT') {
 
-    if (req.body && req.body.id && Number.isInteger(Number(req.body.id)) && Number(req.body.id) >= 0) {
+    if (req.body && req.body.id) {
 
       try {
 
-        const exposureId: Exposure['id'] = Number(req.body.id);
+        const exposureId: Exposure['id'] = req.body.id;
 
-        const partialExposure: Pick<Exposure, 'isSuccessful'> = { isSuccessful: true };
+        const saveExposure = faunadbClient.query(
+          faunadbQuery.Update(
+            faunadbQuery.Ref(
+              faunadbQuery.Collection(COLLECTIONS.EXPOSURES), exposureId
+            ),
+            { data: { isSuccessful: true } }
+          )
+        );
 
-        // TODO: DB - update exposure
+        await saveExposure;
 
         context.res = { status: 201, body: null };
 
