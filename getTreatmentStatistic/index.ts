@@ -1,11 +1,16 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import * as faunadb from 'faunadb';
 import * as ObjectHash from 'object-hash';
 import * as UCB from 'ucb';
 import { ExperimentInput } from '../interfaces/experiment-input';
 import { Treatment } from '../interfaces/treatment';
 import { TreatmentStatistic } from '../interfaces/treatment-statistic';
+import { KEYS } from '../keys';
 import { Experiment } from './experiment';
 import { TREATMENT_PARAMS } from './treatment-params';
+
+const faunadbClient = new faunadb.Client({ secret: KEYS.FAUNDADB_KEY })
+const faunadbQuery = faunadb.query;
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
