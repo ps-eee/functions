@@ -9,91 +9,80 @@ import { TREATMENT_PARAMS } from './treatment-params';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
-  const defaultTreatment: Treatment = {
-    buyCtaColor: 'primary',
-    buyCtaText: 'BUY NOW',
-    isReviewsPrioritized: false,
-    productHeroImage: 'left',
-    productThumbnailImage: 'left'
-  };
+  if (req.method === 'GET') {
 
-  const defaultTreatmentHash: string = ObjectHash(defaultTreatment);
+    if (req.query.userId && Number(req.query.userId)) {
 
-  const defaultTreatmentStatistic: TreatmentStatistic = {
-    exposureCount: 0,
-    successCount: 0,
-    treatment: defaultTreatment,
-    treatmentHash: defaultTreatmentHash
-  };
+      try {
 
-  try {
+        const experimentInput: ExperimentInput = { userId: Number(req.query.userId) };
 
-    const userId: number = req.query.userId ? Number(req.query.userId) : 0;
+        const experiment: Experiment = new Experiment(experimentInput, TREATMENT_PARAMS);
 
-    if (userId === 0) {
-
-      context.res = { status: 200, body: defaultTreatmentStatistic };
-
-    } else {
-
-      const experimentInput: ExperimentInput = { userId };
-
-      const experiment: Experiment = new Experiment(experimentInput, TREATMENT_PARAMS);
-
-      const generatedTreatment: Treatment = {
-        buyCtaColor: experiment.get('buyCtaColor', defaultTreatment.buyCtaColor),
-        buyCtaText: experiment.get('buyCtaText', defaultTreatment.buyCtaText),
-        isReviewsPrioritized: experiment.get('isReviewsPrioritized', defaultTreatment.isReviewsPrioritized),
-        productHeroImage: experiment.get('productHeroImage', defaultTreatment.productHeroImage),
-        productThumbnailImage: experiment.get('productThumbnailImage', defaultTreatment.productThumbnailImage),
-      };
-
-      const generatedTreatmentHash: string = ObjectHash(generatedTreatment);
-
-      // TODO: DB - get all treatmentStatistics
-
-      const treatmentStatistics: TreatmentStatistic[] = [];
-
-      const isTreatmentHashPresent: boolean = treatmentStatistics.filter((treatmentStatistic: TreatmentStatistic): boolean => treatmentStatistic.treatmentHash === generatedTreatmentHash).length === 1;
-
-      if (!isTreatmentHashPresent) {
-
-        const generatedTreatmentStatistic: TreatmentStatistic = {
-          exposureCount: 0,
-          successCount: 0,
-          treatment: generatedTreatment,
-          treatmentHash: generatedTreatmentHash
+        const defaultTreatment: Treatment = {
+          buyCtaColor: 'primary',
+          buyCtaText: 'BUY NOW',
+          isReviewsPrioritized: false,
+          productHeroImage: 'left',
+          productThumbnailImage: 'left'
         };
 
-        // TODO: DB - save new treatmentStatistic
+        const generatedTreatment: Treatment = {
+          buyCtaColor: experiment.get('buyCtaColor', defaultTreatment.buyCtaColor),
+          buyCtaText: experiment.get('buyCtaText', defaultTreatment.buyCtaText),
+          isReviewsPrioritized: experiment.get('isReviewsPrioritized', defaultTreatment.isReviewsPrioritized),
+          productHeroImage: experiment.get('productHeroImage', defaultTreatment.productHeroImage),
+          productThumbnailImage: experiment.get('productThumbnailImage', defaultTreatment.productThumbnailImage),
+        };
 
-        context.res = { status: 200, body: generatedTreatmentStatistic };
+        const generatedTreatmentHash: string = ObjectHash(generatedTreatment);
 
-      } else {
+        // TODO: DB - get all treatmentStatistics
 
-        const arms = treatmentStatistics.length;
-        const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['exposureCount'] => treatmentStatistic.exposureCount);
-        const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount);
+        const treatmentStatistics: TreatmentStatistic[] = [];
 
-        const ucb = new UCB({ arms, counts, values });
+        const isTreatmentHashPresent: boolean = treatmentStatistics.filter((treatmentStatistic: TreatmentStatistic): boolean => treatmentStatistic.treatmentHash === generatedTreatmentHash).length === 1;
 
-        const selectedTreatmentStatisticIndex = await ucb.select();
+        if (!isTreatmentHashPresent) {
 
-        const selectedTreatmentStatistic = treatmentStatistics[selectedTreatmentStatisticIndex];
+          const generatedTreatmentStatistic: TreatmentStatistic = {
+            exposureCount: 0,
+            successCount: 0,
+            treatment: generatedTreatment,
+            treatmentHash: generatedTreatmentHash
+          };
 
-        context.res = { status: 200, body: selectedTreatmentStatistic };
+          // TODO: DB - save new treatmentStatistic
+
+          context.res = { status: 200, body: generatedTreatmentStatistic };
+
+        } else {
+
+          const arms = treatmentStatistics.length;
+          const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['exposureCount'] => treatmentStatistic.exposureCount);
+          const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount);
+
+          const ucb = new UCB({ arms, counts, values });
+
+          const selectedTreatmentStatisticIndex = await ucb.select();
+
+          const selectedTreatmentStatistic = treatmentStatistics[selectedTreatmentStatisticIndex];
+
+          context.res = { status: 200, body: selectedTreatmentStatistic };
+
+        }
+
+      } catch (error) {
+
+        context.log(error);
+
+        context.res = { status: 500, body: null };
 
       }
 
-    }
+    } else { context.res = { status: 400, body: null }; }
 
-  } catch (error) {
-
-    context.log(error);
-
-    context.res = { status: 200, body: defaultTreatmentStatistic };
-
-  }
+  } else { context.res = { status: 404, body: null }; }
 
 };
 

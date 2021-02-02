@@ -14,7 +14,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
           ...req.body
         };
 
-        // TODO: DB - save exposure and update treatmentStatictic.exposureCount transaction and return ID
+        // TODO: DB - transaction(save exposure and update treatmentStatictic.exposureCount) and return exposure
 
         const exposure: Exposure = { id: null, ...partialExposure };
 
