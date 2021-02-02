@@ -2,18 +2,18 @@
 
 ## getTreatmentStatistic
 
-**Purpose**: Get treatment statistic for a user
+**Purpose**: Read treatment statistic for a user
 
 **URL**: GET https://ps-eee-functions.azurewebsites.net/api/getTreatmentStatistic
 
 ## postExposure
 
-**Purpose**: Post exposure of an treatment for further processing
+**Purpose**: Create exposure of a treatment
 
 **URL**: POST https://ps-eee-functions.azurewebsites.net/api/postExposure
 
-## postResult
+## putExposure
 
-**Purpose**: Post result of an treatment for further processing
+**Purpose**: Update exposure of a treatment
 
-**URL**: POST https://ps-eee-functions.azurewebsites.net/api/postResult
+**URL**: POST https://ps-eee-functions.azurewebsites.net/api/putExposure

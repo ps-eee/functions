@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/postResult/index.js"
+  "scriptFile": "../dist/putExposure/index.js"
 }
