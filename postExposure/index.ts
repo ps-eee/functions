@@ -1,10 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import * as faunadb from 'faunadb';
 import { Exposure } from '../interfaces/exposure';
-import { KEYS } from '../keys';
-
-const faunadbClient = new faunadb.Client({ secret: KEYS.FAUNDADB_KEY })
-const faunadbQuery = faunadb.query;
+import { faunadbClient, faunadbQuery } from '../constants/faunadb';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 

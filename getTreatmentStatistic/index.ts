@@ -1,16 +1,14 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import * as faunadb from 'faunadb';
 import * as ObjectHash from 'object-hash';
 import * as UCB from 'ucb';
+import { COLLECTIONS } from '../constants/collections';
+import { faunadbClient, faunadbQuery } from '../constants/faunadb';
+import { INDEXES } from '../constants/indexes';
 import { ExperimentInput } from '../interfaces/experiment-input';
 import { Treatment } from '../interfaces/treatment';
 import { TreatmentStatistic } from '../interfaces/treatment-statistic';
-import { KEYS } from '../keys';
 import { Experiment } from './experiment';
 import { TREATMENT_PARAMS } from './treatment-params';
-
-const faunadbClient = new faunadb.Client({ secret: KEYS.FAUNDADB_KEY })
-const faunadbQuery = faunadb.query;
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
@@ -42,9 +40,18 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         const generatedTreatmentHash: string = ObjectHash(generatedTreatment);
 
-        // TODO: DB - get all treatmentStatistics
+        const getAllTreatmentStatistics = faunadbClient.query(
+          faunadbQuery.Map(
+            faunadbQuery.Paginate(
+              faunadbQuery.Match(
+                faunadbQuery.Index(INDEXES.ALL_TREATMENT_STATISTICS)
+              )
+            ),
+            faunadbQuery.Lambda("X", faunadbQuery.Get(faunadbQuery.Var("X")))
+          )
+        );
 
-        const treatmentStatistics: TreatmentStatistic[] = [];
+        const treatmentStatistics: TreatmentStatistic[] = (await getAllTreatmentStatistics)['data'].map(i => i.data);
 
         const isTreatmentHashPresent: boolean = treatmentStatistics.filter((treatmentStatistic: TreatmentStatistic): boolean => treatmentStatistic.treatmentHash === generatedTreatmentHash).length === 1;
 
@@ -57,9 +64,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             treatmentHash: generatedTreatmentHash
           };
 
-          // TODO: DB - save new treatmentStatistic
+          const saveGeneratedTreatmentStatistic = faunadbClient.query(
+            faunadbQuery.Create(
+              faunadbQuery.Collection(COLLECTIONS.TREATMENT_STATISTICS),
+              { data: generatedTreatmentStatistic }
+            )
+          );
 
-          context.res = { status: 200, body: generatedTreatmentStatistic };
+          context.res = { status: 200, body: (await saveGeneratedTreatmentStatistic)['data'] };
 
         } else {
 
