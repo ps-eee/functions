@@ -78,9 +78,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
           const arms = treatmentStatistics.length;
           const counts = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): TreatmentStatistic['exposureCount'] => treatmentStatistic.exposureCount);
-          const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount);
+          const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount || 0);
 
-          const ucb = new UCB({ arms, counts, values });
+          const algorithmState = { arms, counts, values };
+
+          const ucb = new UCB(algorithmState);
 
           const selectedTreatmentStatisticIndex = await ucb.select();
 

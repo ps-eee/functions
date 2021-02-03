@@ -17,29 +17,41 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
           ...req.body
         };
 
+        const updateExposureCount = faunadbQuery.Map(
+          faunadbQuery.Paginate(
+            faunadbQuery.Match(
+              faunadbQuery.Index(INDEXES.TREATMENT_STATISTICS_BY_TREATMENT_HASH),
+              partialExposure.treatmentHash
+            )
+          ),
+          faunadbQuery.Lambda("X", faunadbQuery.Update(
+            faunadbQuery.Var('X'), {
+            data: {
+              exposureCount: faunadbQuery.Add(
+                faunadbQuery.Select(['data', 'exposureCount'], faunadbQuery.Get(faunadbQuery.Var('X'))),
+                1
+              )
+            }
+          }
+          ))
+        );
+
         const saveExposure = faunadbQuery.Create(
           faunadbQuery.Collection(COLLECTIONS.EXPOSURES),
           { data: partialExposure }
         );
 
-        // TODO: Fix query
-
-        const updateExposureCount = faunadbQuery.Map(
-          faunadbQuery.Paginate(
-            faunadbQuery.Match(
-              faunadbQuery.Index(INDEXES.TREATMENT_STATISTICS_BY_TREATMENT_HASH), partialExposure.treatmentHash)
-          ),
-          faunadbQuery.Lambda("X", faunadbQuery.Update(faunadbQuery.Var("X"), {
-            data: {
-              exposureCount: faunadbQuery.Add(faunadbQuery.Get("X"), 1)
-            }
-          }))
-        );
+        /* https://docs.fauna.com/fauna/current/api/fql/functions/do?lang=javascript
+         *
+         * If all of the expressions executed by Do succeed,
+         * only the results of the last statements executed are returned.
+         * If no expressions are provided, Do returns an error.
+         */
 
         const transaction = faunadbClient.query(
           faunadbQuery.Do(
-            saveExposure,
-            // updateExposureCount
+            updateExposureCount,
+            saveExposure // Order is important
           )
         )
 
