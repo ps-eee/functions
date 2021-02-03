@@ -48,7 +48,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
               ),
               { size: 162 }
             ),
-            faunadbQuery.Lambda("X", faunadbQuery.Get(faunadbQuery.Var("X")))
+            faunadbQuery.Lambda('X', faunadbQuery.Get(faunadbQuery.Var('X')))
           )
         );
 

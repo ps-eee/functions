@@ -24,7 +24,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
               partialExposure.treatmentHash
             )
           ),
-          faunadbQuery.Lambda("X", faunadbQuery.Update(
+          faunadbQuery.Lambda('X', faunadbQuery.Update(
             faunadbQuery.Var('X'), {
             data: {
               exposureCount: faunadbQuery.Add(
