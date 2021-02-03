@@ -8,7 +8,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
   if (req.method === 'PUT') {
 
-    if (req.body && req.body.id && req.body.isSuccessful && req.body.timestamp && req.body.treatmentHash && req.body.userId) {
+    if (req.body && req.body.hasOwnProperty('id') && req.body.hasOwnProperty('isSuccessful') && req.body.hasOwnProperty('timestamp') && req.body.hasOwnProperty('treatmentHash') && req.body.hasOwnProperty('userId')) {
 
       try {
 
