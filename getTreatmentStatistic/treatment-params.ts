@@ -19,23 +19,6 @@ export const TREATMENT_PARAMS: TreatmentParam[] = [
     ]
   },
   {
-    item: 'buyCtaText',
-    choices: [
-      {
-        item: 'BUY NOW',
-        weight: 1
-      },
-      {
-        item: 'GET IT NOW',
-        weight: 1
-      },
-      {
-        item: 'ADD TO CART',
-        weight: 1
-      }
-    ]
-  },
-  {
     item: 'fomoText',
     choices: [
       {
@@ -44,23 +27,6 @@ export const TREATMENT_PARAMS: TreatmentParam[] = [
       },
       {
         item: 'Almost Gone!',
-        weight: 1
-      }
-    ]
-  },
-  {
-    item: 'productHeroImage',
-    choices: [
-      {
-        item: 'left',
-        weight: 1
-      },
-      {
-        item: 'bottom',
-        weight: 1
-      },
-      {
-        item: 'right',
         weight: 1
       }
     ]

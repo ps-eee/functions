@@ -24,17 +24,13 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         const defaultTreatment: Treatment = {
           buyCtaColor: 'primary',
-          buyCtaText: 'BUY NOW',
           fomoText: 'Almost Gone!',
-          productHeroImage: 'left',
           productThumbnailImage: 'left'
         };
 
         const generatedTreatment: Treatment = {
           buyCtaColor: experiment.get('buyCtaColor', defaultTreatment.buyCtaColor),
-          buyCtaText: experiment.get('buyCtaText', defaultTreatment.buyCtaText),
           fomoText: experiment.get('fomoText', defaultTreatment.fomoText),
-          productHeroImage: experiment.get('productHeroImage', defaultTreatment.productHeroImage),
           productThumbnailImage: experiment.get('productThumbnailImage', defaultTreatment.productThumbnailImage),
         };
 
@@ -46,7 +42,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
               faunadbQuery.Match(
                 faunadbQuery.Index(INDEXES.ALL_TREATMENT_STATISTICS)
               ),
-              { size: 162 }
+              { size: 30 }
             ),
             faunadbQuery.Lambda('X', faunadbQuery.Get(faunadbQuery.Var('X')))
           )
@@ -81,6 +77,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
           const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount || 0);
 
           const algorithmState = { arms, counts, values };
+
+          context.log(algorithmState);
 
           const ucb = new UCB(algorithmState);
 
