@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const updateExposureCount = faunadbQuery.Map(
           faunadbQuery.Paginate(
             faunadbQuery.Match(
-              faunadbQuery.Index(INDEXES.TREATMENT_STATISTICS_BY_TREATMENT_HASH),
+              faunadbQuery.Index(INDEXES.ALL_TREATMENT_STATISTICS_BY_TREATMENT_HASH),
               partialExposure.treatmentHash
             )
           ),
