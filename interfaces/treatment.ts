@@ -1,12 +1,12 @@
-import { BuyCtaColors } from '../types/buy-cta-colors';
-import { BuyCtaTexts } from '../types/buy-cta-texts';
-import { FomoTexts } from '../types/fomo-texts';
-import { Images } from '../types/images';
+import { BuyCtaColor } from '../types/buy-cta-color';
+import { BuyCtaText } from '../types/buy-cta-text';
+import { FomoText } from '../types/fomo-text';
+import { Image } from '../types/image';
 
 export interface Treatment {
-  buyCtaColor: BuyCtaColors;
-  buyCtaText: BuyCtaTexts;
-  fomoText: FomoTexts;
-  productHeroImage: Images;
-  productThumbnailImage: Images;
+  buyCtaColor: BuyCtaColor;
+  buyCtaText: BuyCtaText;
+  fomoText: FomoText;
+  productHeroImage: Image;
+  productThumbnailImage: Image;
 }
