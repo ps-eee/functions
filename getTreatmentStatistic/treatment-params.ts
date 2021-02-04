@@ -36,14 +36,14 @@ export const TREATMENT_PARAMS: TreatmentParam[] = [
     ]
   },
   {
-    item: 'isReviewsPrioritized',
+    item: 'fomoText',
     choices: [
       {
-        item: true,
+        item: 'Only Few Left!',
         weight: 1
       },
       {
-        item: false,
+        item: 'Almost Gone!',
         weight: 1
       }
     ]

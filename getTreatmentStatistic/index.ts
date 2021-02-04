@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const defaultTreatment: Treatment = {
           buyCtaColor: 'primary',
           buyCtaText: 'BUY NOW',
-          isReviewsPrioritized: false,
+          fomoText: 'Almost Gone!',
           productHeroImage: 'left',
           productThumbnailImage: 'left'
         };
@@ -33,7 +33,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const generatedTreatment: Treatment = {
           buyCtaColor: experiment.get('buyCtaColor', defaultTreatment.buyCtaColor),
           buyCtaText: experiment.get('buyCtaText', defaultTreatment.buyCtaText),
-          isReviewsPrioritized: experiment.get('isReviewsPrioritized', defaultTreatment.isReviewsPrioritized),
+          fomoText: experiment.get('fomoText', defaultTreatment.fomoText),
           productHeroImage: experiment.get('productHeroImage', defaultTreatment.productHeroImage),
           productThumbnailImage: experiment.get('productThumbnailImage', defaultTreatment.productThumbnailImage),
         };
