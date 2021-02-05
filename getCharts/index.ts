@@ -9,39 +9,41 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
       faunadbQuery.Match(
         faunadbQuery.Index(INDEXES.ALL_EXPOSURES)
       ),
-      { size: 200 }
+      { size: 300 }
     )
   );
 
   const exposures = (await getExposures)['data'];
 
-  const timestamps = [];
-  const treatmentHashes = [];
-  exposures.forEach(i => { timestamps.push(i[0]); treatmentHashes.push(i[1]); });
-
   const chartData = [];
+  const treatmentHashMap = {};
 
-  for (let i = 0; i < treatmentHashes.length; i++) {
+  for (let exposure of exposures) {
 
-    const cumulativeOccurrenceCount = [];
+    const timestamp = exposure[0];
 
-    for (let j = 0; j < treatmentHashes.length; j++) {
+    const treatmentHash = exposure[1];
 
-      const lastValue = cumulativeOccurrenceCount[cumulativeOccurrenceCount.length - 1] || 0;
+    if (!treatmentHashMap.hasOwnProperty(treatmentHash)) {
 
-      const value = treatmentHashes[i] === treatmentHashes[j] ? lastValue + 1 : lastValue;
+      treatmentHashMap[treatmentHash] = {
+        x: [timestamp],
+        y: [1],
+        type: 'scatter'
+      }
 
-      cumulativeOccurrenceCount.push(value);
+    } else {
+
+      const cumulativeOccurrenceCounts = treatmentHashMap[treatmentHash]['y'];
+
+      treatmentHashMap[treatmentHash]['x'].push(timestamp);
+      cumulativeOccurrenceCounts.push(cumulativeOccurrenceCounts[cumulativeOccurrenceCounts.length - 1] + 1);
 
     }
 
-    chartData.push({
-      x: timestamps,
-      y: cumulativeOccurrenceCount,
-      type: 'scatter'
-    });
-
   }
+
+  for (let key in treatmentHashMap) { chartData.push(treatmentHashMap[key]); }
 
   const html = `
   <!doctype html>
