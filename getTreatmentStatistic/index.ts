@@ -42,7 +42,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
               faunadbQuery.Match(
                 faunadbQuery.Index(INDEXES.ALL_TREATMENT_STATISTICS)
               ),
-              { size: 18 }
+              { size: 27 }
             ),
             faunadbQuery.Lambda('X', faunadbQuery.Get(faunadbQuery.Var('X')))
           )
@@ -77,8 +77,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
           const values = treatmentStatistics.map((treatmentStatistic: TreatmentStatistic): number => treatmentStatistic.successCount / treatmentStatistic.exposureCount || 0);
 
           const algorithmState = { arms, counts, values };
-
-          context.log(algorithmState);
 
           const ucb = new UCB(algorithmState);
 

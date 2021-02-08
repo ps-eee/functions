@@ -22,7 +22,7 @@ export const TREATMENT_PARAMS: TreatmentParam[] = [
     item: 'fomoText',
     choices: [
       {
-        item: 'Only Few Left!',
+        item: 'Only 3 left, more on the way.',
         weight: 1
       },
       {

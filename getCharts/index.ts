@@ -9,13 +9,24 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
       faunadbQuery.Match(
         faunadbQuery.Index(INDEXES.ALL_EXPOSURES)
       ),
-      { size: 300 }
+      {
+        size: 500,
+        // after: [
+        //   "2021-02-05T09:56:23.733Z",
+        //   "a975ddfc5dd91b21581cd28bf578e7f31fa93d5e",
+        //   faunadbQuery.Ref(faunadbQuery.Collection("exposures"), "289679746491482629")
+        // ]
+      }
     )
   );
 
   const exposures = (await getExposures)['data'];
 
   const chartData = [];
+  const chartLayout = {
+    xaxis: { title: 'Time', showticklabels: false },
+    yaxis: { title: 'Cumulative Count' }
+  };
   const treatmentHashMap = {};
 
   for (let exposure of exposures) {
@@ -51,7 +62,7 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
 
   <head>
     <meta charset="utf-8">
-    <title>Shoe Souq</title>
+    <title>Shoe Souq - Charts</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -63,10 +74,11 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
   </head>
 
   <body>
+    <h1>Exposures over Time (Upper Confidence Bound)</h1>
     <div id='chart'></div>
     <script>
 
-      Plotly.newPlot('chart', ${JSON.stringify(chartData)});
+      Plotly.newPlot('chart', ${JSON.stringify(chartData)}, ${JSON.stringify(chartLayout)});
 
     </script>
   </body>
