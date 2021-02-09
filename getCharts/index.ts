@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
         faunadbQuery.Index(INDEXES.ALL_EXPOSURES)
       ),
       {
-        size: 500,
+        size: 100,
         // after: [
         //   "2021-02-05T09:56:23.733Z",
         //   "a975ddfc5dd91b21581cd28bf578e7f31fa93d5e",
