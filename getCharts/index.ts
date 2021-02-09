@@ -29,6 +29,8 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
   };
   const treatmentHashMap = {};
 
+  let treatmentNumber: number = 1;
+
   for (let exposure of exposures) {
 
     const timestamp = exposure[0];
@@ -40,8 +42,11 @@ const httpTrigger: AzureFunction = async function (context: Context): Promise<vo
       treatmentHashMap[treatmentHash] = {
         x: [timestamp],
         y: [1],
-        type: 'scatter'
+        type: 'scatter',
+        name: 'Treatment ' + treatmentNumber
       }
+
+      treatmentNumber++;
 
     } else {
 
